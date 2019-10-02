@@ -1,0 +1,9 @@
+---
+# defaults file for sagarpatke/nic
+nic:
+bootproto: static
+ip:
+gateway:
+dns: []
+defroute:
+on_boot:

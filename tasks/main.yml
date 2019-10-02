@@ -1,0 +1,22 @@
+---
+# tasks file for sagarpatke/nic
+- name: Configure Static IP for NIC
+  lineinfile:
+    path: '/etc/sysconfig/network-scripts/ifcfg-{{ nic }}'
+    state: present
+    regexp: '^{{ item.split("=")[0] }}='
+    line: '{{ item }}'
+  loop:
+    - 'DEVICE={{ nic }}'
+    - 'BOOTPROTO={{ bootproto }}'
+    - 'DEFROUTE={{ "yes" if defroute else "" }}'
+    - 'IPADDR={{ ip | ipaddr("address") }}'
+    - 'PREFIX={{ ip | ipaddr("prefix") }}'
+    - 'GATEWAY={{ gateway | ipaddr("address") }}'
+    - 'DNS1={{ dns[0] if dns|length > 0 else "" }}'
+    - 'DNS2={{ dns[1] if dns|length > 1 else "" }}'
+    - 'DNS3={{ dns[2] if dns|length > 2 else "" }}'
+    - 'DNS4={{ dns[3] if dns|length > 3 else "" }}'
+    - 'ONBOOT={{ "yes" if on_boot else "" }}'
+  when: ansible_distribution == 'CentOS' and (ansible_distribution_major_version == '7' or ansible_distribution_major_version == '8')
+  notify: Restart NIC
